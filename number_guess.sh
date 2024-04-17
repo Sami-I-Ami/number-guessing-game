@@ -34,7 +34,35 @@ fi
 
 # guessing game
 GAME() {
+
+# display message
 echo -e "\n$1"
+
+# read guess
+read GUESS
+
+# increase guess amount
+$CURRENT_GUESS_AMT++
+
+# if not a number
+if [[ ! $GUESS =~ ^[0-9]+$ ]]
+then
+  GAME "That is not an integer, guess again:"
+
+# if higher than number
+elif [[ $GUESS > $SECRET_NUMBER ]]
+then
+  GAME "It's higher than that, guess again:"
+
+# if lower than number
+elif [[ $GUESS < $SECRET_NUMBER ]]
+then
+  GAME "It's lower than that, guess again:"
+
+# if guessed correctly
+else
+  echo -e "You guessed it in $CURRENT_GUESS_AMT tries. The secret number was $SECRET_NUMBER. Nice Job!"
+fi
 }
 
 # inital run of game
