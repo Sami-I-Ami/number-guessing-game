@@ -19,9 +19,6 @@ then
   # message
   echo -e "\nWelcome, $USERNAME! It looks like this is your first time here."
 
-  # enter info into database
-  INSERT_USER_RESULT=$($PSQL "INSERT INTO guess_info(username) VALUES('$USERNAME')")
-
 # otherwise
 else
   # split info
@@ -67,3 +64,11 @@ fi
 
 # inital run of game
 GAME "Guess the secret number between 1 and 1000:"
+
+# input into database
+# insert when first game
+if [[ -z $PLAYER_INFO ]]
+then
+  # enter info into database
+  INSERT_USER_RESULT=$($PSQL "INSERT INTO guess_info(username, games_played, best_game) VALUES('$USERNAME', 1, $CURRENT_GUESS_AMT)")
+fi
