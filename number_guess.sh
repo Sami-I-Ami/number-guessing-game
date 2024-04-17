@@ -71,4 +71,15 @@ if [[ -z $PLAYER_INFO ]]
 then
   # enter info into database
   INSERT_USER_RESULT=$($PSQL "INSERT INTO guess_info(username, games_played, best_game) VALUES('$USERNAME', 1, $CURRENT_GUESS_AMT)")
+
+# if not new
+else
+  # calculate games played and new best
+  GAMES_PLAYED=$((GAMES_PLAYED + 1))
+  if [[ $CURRENT_GUESS_AMT < $BEST_GAME ]]
+  then
+    BEST_GAME=$CURRENT_GUESS_AMT
+  fi
+
+  # enter info into database
 fi
