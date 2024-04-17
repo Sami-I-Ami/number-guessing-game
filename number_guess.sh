@@ -61,29 +61,30 @@ then
 
 # if guessed correctly
 else
-  echo -e "You guessed it in $CURRENT_GUESS_AMT tries. The secret number was $SECRET_NUMBER. Nice Job!"
+  # input into database
+  # insert when first game
+  if [[ -z $GAMES_PLAYED ]]
+  then
+    # enter info into database
+    INSERT_USER_RESULT=$($PSQL "INSERT INTO guess_info(username, games_played, best_game) VALUES('$USERNAME', 1, $CURRENT_GUESS_AMT)")
+
+  # if not new
+  else
+    # calculate games played and new best
+    GAMES_PLAYED=$((GAMES_PLAYED + 1))
+    if [[ $CURRENT_GUESS_AMT < $BEST_GAME ]]
+    then
+      BEST_GAME=$CURRENT_GUESS_AMT
+    fi
+
+    # update info into database
+    UPDATE_USER_RESULT=$($PSQL "UPDATE guess_info SET games_played = $GAMES_PLAYED, best_game = $BEST_GAME WHERE username = '$USERNAME'")
+  fi
+
+  # message
+  echo -e "\nYou guessed it in $CURRENT_GUESS_AMT tries. The secret number was $SECRET_NUMBER. Nice Job!"
 fi
 }
 
 # inital run of game
 GAME "Guess the secret number between 1 and 1000:"
-
-# input into database
-# insert when first game
-if [[ -z $GAMES_PLAYED ]]
-then
-  # enter info into database
-  INSERT_USER_RESULT=$($PSQL "INSERT INTO guess_info(username, games_played, best_game) VALUES('$USERNAME', 1, $CURRENT_GUESS_AMT)")
-
-# if not new
-else
-  # calculate games played and new best
-  GAMES_PLAYED=$((GAMES_PLAYED + 1))
-  if [[ $CURRENT_GUESS_AMT < $BEST_GAME ]]
-  then
-    BEST_GAME=$CURRENT_GUESS_AMT
-  fi
-
-  # update info into database
-  UPDATE_USER_RESULT=$($PSQL "UPDATE guess_info SET games_played = $GAMES_PLAYED, best_game = $BEST_GAME WHERE username = '$USERNAME'")
-fi
