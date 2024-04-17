@@ -17,7 +17,7 @@ PLAYER_INFO=$($PSQL "SELECT games_played, best_game FROM guess_info WHERE userna
 if [[ -z $PLAYER_INFO ]]
 then
   # message
-  echo "Welcome, $USERNAME! It looks like this is your first time here."
+  echo -e "\nWelcome, $USERNAME! It looks like this is your first time here."
 
   # enter info into database
   INSERT_USER_RESULT=$($PSQL "INSERT INTO guess_info(username) VALUES('$USERNAME')")
@@ -28,7 +28,7 @@ else
   echo $PLAYER_INFO | while read GAMES_PLAYED BAR BEST_GAME
   do
     # message
-    echo "Welcome back, $USERNAME! You have played $GAMES_PLAYED games, and your best game took $BEST_GAME guesses."
+    echo -e "\nWelcome back, $USERNAME! You have played $GAMES_PLAYED games, and your best game took $BEST_GAME guesses."
   done
 fi
 
