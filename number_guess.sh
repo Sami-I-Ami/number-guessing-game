@@ -84,5 +84,6 @@ else
     BEST_GAME=$CURRENT_GUESS_AMT
   fi
 
-  # enter info into database
+  # update info into database
+  UPDATE_USER_RESULT=$($PSQL "UPDATE guess_info SET games_played = $GAMES_PLAYED, best_game = $BEST_GAME WHERE username = '$USERNAME'")
 fi
