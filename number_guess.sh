@@ -42,20 +42,20 @@ echo -e "\n$1"
 read GUESS
 
 # increase guess amount
-$CURRENT_GUESS_AMT++
+CURRENT_GUESS_AMT=$((CURRENT_GUESS_AMT + 1))
 
 # if not a number
 if [[ ! $GUESS =~ ^[0-9]+$ ]]
 then
   GAME "That is not an integer, guess again:"
 
-# if higher than number
-elif [[ $GUESS > $SECRET_NUMBER ]]
+# if lower than number
+elif [[ $GUESS < $SECRET_NUMBER ]]
 then
   GAME "It's higher than that, guess again:"
 
-# if lower than number
-elif [[ $GUESS < $SECRET_NUMBER ]]
+# if higher than number
+elif [[ $GUESS > $SECRET_NUMBER ]]
 then
   GAME "It's lower than that, guess again:"
 
