@@ -31,3 +31,11 @@ else
     echo "Welcome back, $USERNAME! You have played $GAMES_PLAYED games, and your best game took $BEST_GAME guesses."
   done
 fi
+
+# guessing game
+GAME() {
+echo -e "\n$1"
+}
+
+# inital run of game
+GAME "Guess the secret number between 1 and 1000:"
