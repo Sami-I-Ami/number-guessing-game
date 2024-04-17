@@ -21,4 +21,13 @@ then
 
   # enter info into database
   INSERT_USER_RESULT=$($PSQL "INSERT INTO guess_info(username) VALUES('$USERNAME')")
+
+# otherwise
+else
+  # split info
+  echo $PLAYER_INFO | while read GAMES_PLAYED BAR BEST_GAME
+  do
+    # message
+    echo "Welcome back, $USERNAME! You have played $GAMES_PLAYED games, and your best game took $BEST_GAME guesses."
+  done
 fi
