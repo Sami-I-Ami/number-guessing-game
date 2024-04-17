@@ -70,7 +70,7 @@ GAME "Guess the secret number between 1 and 1000:"
 
 # input into database
 # insert when first game
-if [[ -z $PLAYER_INFO ]]
+if [[ -z $GAMES_PLAYED ]]
 then
   # enter info into database
   INSERT_USER_RESULT=$($PSQL "INSERT INTO guess_info(username, games_played, best_game) VALUES('$USERNAME', 1, $CURRENT_GUESS_AMT)")
