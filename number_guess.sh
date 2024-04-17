@@ -10,23 +10,26 @@ CURRENT_GUESS_AMT=0
 echo Enter your username:
 read USERNAME
 
-# get player's info from database
-PLAYER_INFO=$($PSQL "SELECT games_played, best_game FROM guess_info WHERE username = '$USERNAME'")
+# get player's games_played from database
+GAMES_PLAYED=$($PSQL "SELECT games_played FROM guess_info WHERE username = '$USERNAME'")
 
-# if there is no info
-if [[ -z $PLAYER_INFO ]]
+# if there is no GAMES
+if [[ -z $GAMES_PLAYED ]]
 then
   # message
   echo -e "\nWelcome, $USERNAME! It looks like this is your first time here."
 
 # otherwise
 else
-  # split info
-  echo $PLAYER_INFO | while read GAMES_PLAYED BAR BEST_GAME
-  do
-    # message
-    echo -e "\nWelcome back, $USERNAME! You have played $GAMES_PLAYED games, and your best game took $BEST_GAME guesses."
-  done
+  # get player's best game
+  BEST_GAME=$($PSQL "SELECT best_game FROM guess_info WHERE username = '$USERNAME'")
+
+  # format variables
+  GAMES_PLAYED_FORMATTED=$(echo $GAMES_PLAYED | sed 's/ //')
+  BEST_GAME_FORMATTED=$(echo $BEST_GAME | sed 's/ //')
+
+  # message
+  echo -e "\nWelcome back, $USERNAME! You have played $GAMES_PLAYED_FORMATTED games, and your best game took $BEST_GAME_FORMATTED guesses."
 fi
 
 # guessing game
