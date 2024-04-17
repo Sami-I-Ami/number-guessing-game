@@ -61,6 +61,10 @@ ALTER TABLE public.guess_info OWNER TO freecodecamp;
 --
 
 INSERT INTO public.guess_info VALUES ('Sami', 1, 20);
+INSERT INTO public.guess_info VALUES ('user_1713385217891', NULL, NULL);
+INSERT INTO public.guess_info VALUES ('user_1713385217890', NULL, NULL);
+INSERT INTO public.guess_info VALUES ('sAMI', NULL, NULL);
+INSERT INTO public.guess_info VALUES ('Me', 1, 10);
 
 
 --
