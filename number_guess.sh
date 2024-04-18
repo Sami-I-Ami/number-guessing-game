@@ -1,9 +1,8 @@
 #!/bin/bash
 
 # Initial variables
-PSQL="psql --username=freecodecamp --dbname=number_guess --tuples-only -c"
+PSQL="psql --username=freecodecamp --dbname=number_guess -t --no-align -c"
 SECRET_NUMBER=$(( RANDOM % 1000 + 1 ))
-CURRENT_GUESS_AMT=0
 
 # Login
 # read username
@@ -24,67 +23,60 @@ else
   # get player's best game
   BEST_GAME=$($PSQL "SELECT best_game FROM guess_info WHERE username = '$USERNAME'")
 
-  # format variables
-  GAMES_PLAYED_FORMATTED=$(echo $GAMES_PLAYED | sed 's/ //')
-  BEST_GAME_FORMATTED=$(echo $BEST_GAME | sed 's/ //')
-
   # message
-  echo -e "\nWelcome back, $USERNAME! You have played $GAMES_PLAYED_FORMATTED games, and your best game took $BEST_GAME_FORMATTED guesses."
+  echo -e "\nWelcome back, $USERNAME! You have played $GAMES_PLAYED games, and your best game took $BEST_GAME guesses."
 fi
+
+# display starting message
+echo -e "\nGuess the secret number between 1 and 1000:"
+read GUESS
+CURRENT_GUESS_AMT=1
 
 # guessing game
-GAME() {
+while [[ $GUESS != $SECRET_NUMBER ]]
+do
+  # if not a number
+  if [[ ! $GUESS =~ ^[0-9]+$ ]]
+  then
+    echo -e "\nThat is not an integer, guess again:"
+    read GUESS
 
-# display message
-echo -e "\n$1"
+  # if lower than number
+  elif [[ $GUESS < $SECRET_NUMBER ]]
+  then
+    echo -e "\nIt's higher than that, guess again:"
+    read GUESS
+    (( CURRENT_GUESS_AMT++ ))
 
-# read guess
-read GUESS
-
-# increase guess amount
-CURRENT_GUESS_AMT=$((CURRENT_GUESS_AMT + 1))
-
-# if not a number
-if [[ ! $GUESS =~ ^[0-9]+$ ]]
-then
-  GAME "That is not an integer, guess again:"
-
-# if lower than number
-elif [[ $GUESS < $SECRET_NUMBER ]]
-then
-  GAME "It's higher than that, guess again:"
-
-# if higher than number
-elif [[ $GUESS > $SECRET_NUMBER ]]
-then
-  GAME "It's lower than that, guess again:"
+  # if higher than number
+  elif [[ $GUESS > $SECRET_NUMBER ]]
+  then
+    echo -e "\nIt's lower than that, guess again:"
+    read GUESS
+    (( CURRENT_GUESS_AMT++ ))
+  fi
+done
 
 # if guessed correctly
+# message
+echo You guessed it in $CURRENT_GUESS_AMT tries. The secret number was $SECRET_NUMBER. Nice job!
+
+# input into database
+# insert when first game
+if [[ -z $GAMES_PLAYED ]]
+then
+  # enter info into database
+  INSERT_USER_RESULT=$($PSQL "INSERT INTO guess_info(username, games_played, best_game) VALUES('$USERNAME', 1, $CURRENT_GUESS_AMT)")
+
+# if not new
 else
-  # input into database
-  # insert when first game
-  if [[ -z $GAMES_PLAYED ]]
+  # calculate games played and new best
+  (( GAMES_PLAYED++ ))
+  if [[ $CURRENT_GUESS_AMT < $BEST_GAME ]]
   then
-    # enter info into database
-    INSERT_USER_RESULT=$($PSQL "INSERT INTO guess_info(username, games_played, best_game) VALUES('$USERNAME', 1, $CURRENT_GUESS_AMT)")
-
-  # if not new
-  else
-    # calculate games played and new best
-    GAMES_PLAYED=$((GAMES_PLAYED + 1))
-    if [[ $CURRENT_GUESS_AMT < $BEST_GAME ]]
-    then
-      BEST_GAME=$CURRENT_GUESS_AMT
-    fi
-
-    # update info into database
-    UPDATE_USER_RESULT=$($PSQL "UPDATE guess_info SET games_played = $GAMES_PLAYED, best_game = $BEST_GAME WHERE username = '$USERNAME'")
+    BEST_GAME=$CURRENT_GUESS_AMT
   fi
 
-  # message
-  echo -e "\nYou guessed it in $CURRENT_GUESS_AMT tries. The secret number was $SECRET_NUMBER. Nice Job!"
+  # update info into database
+  UPDATE_USER_RESULT=$($PSQL "UPDATE guess_info SET games_played = $GAMES_PLAYED, best_game = $BEST_GAME WHERE username = '$USERNAME'")
 fi
-}
-
-# inital run of game
-GAME "Guess the secret number between 1 and 1000:"
